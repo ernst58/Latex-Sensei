@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX 1000
+
+void generateRandomNumbers(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 1000; // Random number between 0 and 999
+    }
+}
+
+void printArray(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+void bubbleSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    srand(time(0));
+    int n, sortChoice, sortMethod;
+    int arr[MAX];
+
+    printf("Student ID: 67543210003-9\n");
+    printf("First Name: Pran\n");
+    printf("Last Name: Meedej\n");
+    
+    while (1) {
+        printf("\nEnter number of random values: ");
+        scanf("%d", &n);
+        
+        generateRandomNumbers(arr, n);
+        printf("Generated Numbers: ");
+        printArray(arr, n);
+        
+        printf("Do you want to sort the numbers? (1-Yes, 0-No): ");
+        scanf("%d", &sortChoice);
+        
+        if (sortChoice == 1) {
+            printf("\nSorting Menu:\n");
+            printf("1. Insertion Sort\n");
+            printf("2. Bubble Sort\n");
+            printf("3. Quick Sort\n");
+            printf("4. Heap Sort\n");
+            printf("Choose sorting method: ");
+            scanf("%d", &sortMethod);
+            
+            if (sortMethod == 2) {
+                printf("Sorting data using Bubble Sort...\n");
+                bubbleSort(arr, n);
+                printf("Sorted Numbers: ");
+                printArray(arr, n);
+            } else {
+                printf("Sorting method not implemented yet.\n");
+            }
+        }
+    }
+    return 0;
+}
