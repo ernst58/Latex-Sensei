@@ -17,10 +17,10 @@ void printArray(int arr[], int n) {
     printf("\n");
 }
 
-void bubbleSort(int arr[], int n) {
+void bubbleSort(int arr[], int n, int ascending) {
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
+            if ((ascending && arr[j] > arr[j + 1]) || (!ascending && arr[j] < arr[j + 1])) {
                 int temp = arr[j];
                 arr[j] = arr[j + 1];
                 arr[j + 1] = temp;
@@ -31,11 +31,11 @@ void bubbleSort(int arr[], int n) {
     }
 }
 
-void insertionSort(int arr[], int n) {
+void insertionSort(int arr[], int n, int ascending) {
     for (int i = 1; i < n; i++) {
         int key = arr[i];
         int j = i - 1;
-        while (j >= 0 && arr[j] > key) {
+        while (j >= 0 && ((ascending && arr[j] > key) || (!ascending && arr[j] < key))) {
             arr[j + 1] = arr[j];
             j--;
         }
@@ -45,12 +45,12 @@ void insertionSort(int arr[], int n) {
     }
 }
 
-void quickSort(int arr[], int low, int high) {
+void quickSort(int arr[], int low, int high, int ascending) {
     if (low < high) {
         int pivot = arr[high];
         int i = low - 1;
         for (int j = low; j < high; j++) {
-            if (arr[j] < pivot) {
+            if ((ascending && arr[j] < pivot) || (!ascending && arr[j] > pivot)) {
                 i++;
                 int temp = arr[i];
                 arr[i] = arr[j];
@@ -65,69 +65,46 @@ void quickSort(int arr[], int low, int high) {
         printf("Pivot at index %d: ", pi);
         printArray(arr, high + 1);
 
-        quickSort(arr, low, pi - 1);
-        quickSort(arr, pi + 1, high);
+        quickSort(arr, low, pi - 1, ascending);
+        quickSort(arr, pi + 1, high, ascending);
     }
 }
 
-void heapify(int arr[], int n, int i) {
+void heapify(int arr[], int n, int i, int ascending) {
     int largest = i;
     int left = 2 * i + 1;
     int right = 2 * i + 2;
 
-    if (left < n && arr[left] > arr[largest])
+    if (left < n && ((ascending && arr[left] > arr[largest]) || (!ascending && arr[left] < arr[largest])))
         largest = left;
-    if (right < n && arr[right] > arr[largest])
+    if (right < n && ((ascending && arr[right] > arr[largest]) || (!ascending && arr[right] < arr[largest])))
         largest = right;
 
     if (largest != i) {
         int temp = arr[i];
         arr[i] = arr[largest];
         arr[largest] = temp;
-        heapify(arr, n, largest);
+        heapify(arr, n, largest, ascending);
     }
 }
 
-void heapSort(int arr[], int n) {
+void heapSort(int arr[], int n, int ascending) {
     for (int i = n / 2 - 1; i >= 0; i--)
-        heapify(arr, n, i);
+        heapify(arr, n, i, ascending);
 
     for (int i = n - 1; i >= 0; i--) {
         int temp = arr[0];
         arr[0] = arr[i];
         arr[i] = temp;
-        heapify(arr, i, 0);
+        heapify(arr, i, 0, ascending);
         printf("Step %d: ", n - i);
-        printArray(arr, n);
-    }
-}
-
-void radixSort(int arr[], int n) {
-    int max = arr[0];
-    for (int i = 1; i < n; i++) {
-        if (arr[i] > max)
-            max = arr[i];
-    }
-    for (int exp = 1; max / exp > 0; exp *= 10) {
-        int output[n], count[10] = {0};
-        for (int i = 0; i < n; i++)
-            count[(arr[i] / exp) % 10]++;
-        for (int i = 1; i < 10; i++)
-            count[i] += count[i - 1];
-        for (int i = n - 1; i >= 0; i--) {
-            output[count[(arr[i] / exp) % 10] - 1] = arr[i];
-            count[(arr[i] / exp) % 10]--;
-        }
-        for (int i = 0; i < n; i++)
-            arr[i] = output[i];
-        printf("Step exp %d: ", exp);
         printArray(arr, n);
     }
 }
 
 int main() {
     srand(time(0));
-    int n, sortChoice, sortMethod;
+    int n, sortChoice, sortMethod, orderChoice;
     int arr[MAX];
 
     printf("Student ID: 123456\n");
@@ -146,17 +123,23 @@ int main() {
         scanf("%d", &sortChoice);
         
         if (sortChoice == 1) {
+            printf("\nChoose sorting order:\n");
+            printf("1. Ascending (Min to Max)\n");
+            printf("2. Descending (Max to Min)\n");
+            printf("Enter choice: ");
+            scanf("%d", &orderChoice);
+            int ascending = (orderChoice == 1);
+            
             printf("\nSorting Menu:\n");
             printf("1. Insertion Sort\n");
             printf("2. Bubble Sort\n");
             printf("3. Quick Sort\n");
             printf("4. Heap Sort\n");
-            printf("5. Radix Sort\n");
-            printf("6. Exit\n");
+            printf("5. Exit\n");
             printf("Choose sorting method: ");
             scanf("%d", &sortMethod);
             
-            if (sortMethod == 6) {
+            if (sortMethod == 5) {
                 printf("Exiting program...\n");
                 break;
             }
@@ -164,23 +147,19 @@ int main() {
             switch (sortMethod) {
                 case 1:
                     printf("Sorting data using Insertion Sort...\n");
-                    insertionSort(arr, n);
+                    insertionSort(arr, n, ascending);
                     break;
                 case 2:
                     printf("Sorting data using Bubble Sort...\n");
-                    bubbleSort(arr, n);
+                    bubbleSort(arr, n, ascending);
                     break;
                 case 3:
                     printf("Sorting data using Quick Sort...\n");
-                    quickSort(arr, 0, n - 1);
+                    quickSort(arr, 0, n - 1, ascending);
                     break;
                 case 4:
                     printf("Sorting data using Heap Sort...\n");
-                    heapSort(arr, n);
-                    break;
-                case 5:
-                    printf("Sorting data using Radix Sort...\n");
-                    radixSort(arr, n);
+                    heapSort(arr, n, ascending);
                     break;
                 default:
                     printf("Invalid sorting method.\n");
